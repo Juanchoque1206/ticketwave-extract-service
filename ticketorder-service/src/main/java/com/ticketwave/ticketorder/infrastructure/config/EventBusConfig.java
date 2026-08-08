@@ -3,8 +3,10 @@ package com.ticketwave.ticketorder.infrastructure.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
-import com.ticketwave.domain.bus.CommandBus;
-import com.ticketwave.domain.bus.EventBus;
+import com.ticketwave.ticketorder.domain.bus.CommandBus;
+import com.ticketwave.ticketorder.domain.bus.EventBus;
+import com.ticketwave.ticketorder.infrastructure.bus.InMemoryCommandBus;
+import com.ticketwave.ticketorder.infrastructure.bus.InMemoryEventBus;
 import com.ticketwave.ticketorder.infrastructure.bus.RabbitMQCommandBusAdapter;
 import com.ticketwave.ticketorder.infrastructure.bus.RabbitMQEventBusAdapter;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -23,6 +25,18 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 public class EventBusConfig {
+
+    @Bean
+    @Profile("!rabbitmq")
+    public EventBus inMemoryEventBus() {
+        return new InMemoryEventBus();
+    }
+
+    @Bean
+    @Profile("!rabbitmq")
+    public CommandBus inMemoryCommandBus() {
+        return new InMemoryCommandBus();
+    }
 
     @Bean
     @Profile("rabbitmq")

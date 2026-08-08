@@ -30,7 +30,7 @@ import java.util.UUID;
  * allows lookups by order without scanning.
  */
 @Component
-@Profile("!test")
+@Profile("!test & !local")
 public class RedisSagaStateRepository implements SagaStateRepository {
 
     private static final String STATE_KEY_PREFIX = "saga:state:";

@@ -1,7 +1,7 @@
 package com.ticketwave.ticketorder.application;
 
-import com.ticketwave.domain.bus.CommandBus;
-import com.ticketwave.domain.commands.CancelTicketOrderCommand;
+import com.ticketwave.ticketorder.domain.bus.CommandBus;
+import com.ticketwave.ticketorder.domain.commands.CancelTicketOrderCommand;
 import org.springframework.stereotype.Component;
 
 /**

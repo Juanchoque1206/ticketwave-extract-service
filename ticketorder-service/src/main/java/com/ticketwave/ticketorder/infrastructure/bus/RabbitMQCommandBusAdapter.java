@@ -1,8 +1,8 @@
 package com.ticketwave.ticketorder.infrastructure.bus;
 
-import com.ticketwave.domain.bus.CommandBus;
-import com.ticketwave.domain.commands.Command;
-import com.ticketwave.domain.commands.CommandHandler;
+import com.ticketwave.ticketorder.domain.bus.CommandBus;
+import com.ticketwave.ticketorder.domain.commands.Command;
+import com.ticketwave.ticketorder.domain.commands.CommandHandler;
 import jakarta.annotation.PostConstruct;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;

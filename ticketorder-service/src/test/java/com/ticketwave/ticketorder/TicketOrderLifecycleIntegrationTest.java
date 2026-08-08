@@ -1,11 +1,11 @@
 package com.ticketwave.ticketorder;
 
-import com.ticketwave.domain.commands.CancelTicketOrderCommand;
-import com.ticketwave.domain.events.PaymentAuthorized;
-import com.ticketwave.domain.events.PromotionApplied;
-import com.ticketwave.domain.events.TicketOrderCancelled;
-import com.ticketwave.domain.events.TicketOrderConfirmed;
-import com.ticketwave.domain.events.TicketOrderCreated;
+import com.ticketwave.ticketorder.domain.commands.CancelTicketOrderCommand;
+import com.ticketwave.ticketorder.domain.events.PaymentAuthorized;
+import com.ticketwave.ticketorder.domain.events.PromotionApplied;
+import com.ticketwave.ticketorder.domain.events.TicketOrderCancelled;
+import com.ticketwave.ticketorder.domain.events.TicketOrderConfirmed;
+import com.ticketwave.ticketorder.domain.events.TicketOrderCreated;
 import com.ticketwave.ticketorder.application.AuthenticationContext;
 import com.ticketwave.ticketorder.application.CreateOrderUseCase;
 import com.ticketwave.ticketorder.application.OrderService;

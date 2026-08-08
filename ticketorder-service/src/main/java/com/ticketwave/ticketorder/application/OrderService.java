@@ -1,7 +1,7 @@
 package com.ticketwave.ticketorder.application;
 
-import com.ticketwave.domain.bus.EventBus;
-import com.ticketwave.domain.events.PromotionApplied;
+import com.ticketwave.ticketorder.domain.bus.EventBus;
+import com.ticketwave.ticketorder.domain.events.PromotionApplied;
 import com.ticketwave.ticketorder.application.port.EventData;
 import com.ticketwave.ticketorder.application.port.EventGateway;
 import com.ticketwave.ticketorder.application.port.FraudGateway;

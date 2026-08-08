@@ -1,8 +1,8 @@
 package com.ticketwave.ticketorder.application;
 
-import com.ticketwave.domain.bus.EventBus;
-import com.ticketwave.domain.events.PaymentAuthorized;
-import com.ticketwave.domain.events.TicketOrderConfirmed;
+import com.ticketwave.ticketorder.domain.bus.EventBus;
+import com.ticketwave.ticketorder.domain.events.PaymentAuthorized;
+import com.ticketwave.ticketorder.domain.events.TicketOrderConfirmed;
 import com.ticketwave.ticketorder.infrastructure.dto.order.OrderResponse;
 import org.springframework.stereotype.Component;
 

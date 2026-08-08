@@ -1,13 +1,5 @@
 package com.ticketwave.ticketorder.config;
 
-import com.ticketwave.domain.bus.CommandBus;
-import com.ticketwave.domain.bus.EventBus;
-import com.ticketwave.ticketorder.application.port.EventGateway;
-import com.ticketwave.ticketorder.application.port.FraudGateway;
-import com.ticketwave.ticketorder.application.port.PromotionGateway;
-import com.ticketwave.ticketorder.application.port.UserGateway;
-import com.ticketwave.ticketorder.infrastructure.bus.InMemoryCommandBus;
-import com.ticketwave.ticketorder.infrastructure.bus.InMemoryEventBus;
 import com.ticketwave.ticketorder.infrastructure.gateway.FakeEventGateway;
 import com.ticketwave.ticketorder.infrastructure.gateway.FakeFraudGateway;
 import com.ticketwave.ticketorder.infrastructure.gateway.FakePromotionGateway;
@@ -23,16 +15,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("test")
 public class TestInfraConfig {
-
-    @Bean
-    public InMemoryEventBus inMemoryEventBus() {
-        return new InMemoryEventBus();
-    }
-
-    @Bean
-    public InMemoryCommandBus inMemoryCommandBus() {
-        return new InMemoryCommandBus();
-    }
 
     @Bean
     public FakeEventGateway fakeEventGateway() {
