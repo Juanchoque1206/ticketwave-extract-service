@@ -60,6 +60,11 @@ public class TicketOrderController {
         return ResponseEntity.ok(orderService.listOrdersForUser(ctx));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderResponse>> allOrders() {
+        return ResponseEntity.ok(orderService.listAllOrders());
+    }
+
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> get(@PathVariable UUID orderId) {
         return ResponseEntity.ok(orderService.getOrder(orderId));

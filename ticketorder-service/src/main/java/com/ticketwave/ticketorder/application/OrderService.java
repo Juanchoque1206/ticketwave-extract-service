@@ -147,6 +147,11 @@ public class OrderService {
         return orderRepository.findByUserId(user.id()).stream().map(this::toResponse).toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> listAllOrders() {
+        return orderRepository.findAll().stream().map(this::toResponse).toList();
+    }
+
     private TicketOrder requireOrder(UUID orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
