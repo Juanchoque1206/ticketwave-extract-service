@@ -1,0 +1,13 @@
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+ticketwave:
+  saga:
+    recovery-enabled: false

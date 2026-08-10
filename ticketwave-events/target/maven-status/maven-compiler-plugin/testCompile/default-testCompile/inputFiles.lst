@@ -1,2 +1,2 @@
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketwave-events\src\test\java\com\ticketwave\infrastructure\saga\InMemorySagaStateRepository.java
+C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketwave-events\src\test\java\com\ticketwave\RabbitMQEventBusRoundTripTest.java
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketwave-events\src\test\java\com\ticketwave\TicketOrderFlowIntegrationTest.java

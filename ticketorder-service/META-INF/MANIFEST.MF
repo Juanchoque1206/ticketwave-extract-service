@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Version: 4.0.0
+Created-By: JDK 24.0.2 (Oracle Corporation)
+Implementation-Title: spring-amqp
+Implementation-Vendor-Id: org.springframework.amqp
+Implementation-Vendor: Broadcom Inc.
+Implementation-URL: https://projects.spring.io/spring-amqp
+Automatic-Module-Name: spring.amqp
+

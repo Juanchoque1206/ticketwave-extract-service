@@ -51,6 +51,7 @@ C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\config\EventBusConfig.java
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\config\MonolithClientConfig.java
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\controller\GlobalExceptionHandler.java
+C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\controller\RabbitMQTestController.java
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\controller\TicketOrderController.java
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\dto\order\CreateOrderRequest.java
 C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\main\java\com\ticketwave\ticketorder\infrastructure\dto\order\OrderResponse.java

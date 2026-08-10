@@ -1,2 +1,2 @@
 com\ticketwave\TicketOrderFlowIntegrationTest.class
-com\ticketwave\infrastructure\saga\InMemorySagaStateRepository.class
+com\ticketwave\RabbitMQEventBusRoundTripTest.class

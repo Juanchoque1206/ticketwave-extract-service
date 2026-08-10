@@ -34,6 +34,7 @@ com\ticketwave\ticketorder\infrastructure\controller\TicketOrderController.class
 com\ticketwave\ticketorder\infrastructure\rest\PromotionQuoteRequest.class
 com\ticketwave\ticketorder\infrastructure\bus\InMemoryCommandBus.class
 com\ticketwave\ticketorder\infrastructure\exception\ResourceNotFoundException.class
+com\ticketwave\ticketorder\infrastructure\controller\RabbitMQTestController.class
 com\ticketwave\ticketorder\infrastructure\bus\RabbitMQEventBusAdapter.class
 com\ticketwave\ticketorder\infrastructure\rest\RestUserGateway.class
 com\ticketwave\ticketorder\domain\order\OrderStatus.class

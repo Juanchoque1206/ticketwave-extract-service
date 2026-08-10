@@ -1,10 +1,12 @@
 package com.ticketwave;
 
-import com.ticketwave.domain.bus.EventBus;
+import com.ticketwave.domain.bus.CommandBus;
 import com.ticketwave.domain.event.Event;
 import com.ticketwave.domain.event.EventRepository;
 import com.ticketwave.domain.event.EventStatus;
-import com.ticketwave.domain.events.TicketOrderCreated;
+import com.ticketwave.domain.commands.IssueTicketCommand;
+import com.ticketwave.domain.commands.NotifyOrderCommand;
+import com.ticketwave.domain.commands.ProcessPaymentCommand;
 import com.ticketwave.domain.notification.NotificationRepository;
 import com.ticketwave.domain.payment.Payment;
 import com.ticketwave.domain.payment.PaymentRepository;
@@ -31,10 +33,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Drives the full purchase saga offline: a TicketOrderCreated event published by
- * the ticketorder-service triggers Payment -&gt; Ticket issuance -&gt;
- * Notification through the in-memory bus, with the order aggregate replaced by
- * the scalar orderId carried by the events/commands.
+ * Drives the command-handling half of the purchase saga offline. The standalone
+ * ticketwave-orchestrator turns a TicketOrderCreated event into the
+ * ProcessPaymentCommand, IssueTicketCommand and NotifyOrderCommand that this
+ * service consumes; this test replays those commands through the in-memory
+ * command bus and asserts the payment, tickets and notification side effects.
  */
 @SpringBootTest
 @ActiveProfiles("test")
@@ -42,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TicketOrderFlowIntegrationTest {
 
     @Autowired
-    private EventBus eventBus;
+    private CommandBus commandBus;
     @Autowired
     private EventRepository eventRepository;
     @Autowired
@@ -60,9 +63,14 @@ class TicketOrderFlowIntegrationTest {
         Event event = createEvent();
         UUID orderId = UUID.randomUUID();
         BigDecimal total = event.getBasePrice().multiply(BigDecimal.valueOf(2));
+        int quantity = 2;
 
-        eventBus.publish(new TicketOrderCreated(UUID.randomUUID(), Instant.now(),
-                orderId, user.getId(), event.getId(), 2, total, BigDecimal.ZERO));
+        commandBus.send(new ProcessPaymentCommand(UUID.randomUUID(), Instant.now(),
+                orderId, "STRIPE", total));
+        commandBus.send(new IssueTicketCommand(UUID.randomUUID(), Instant.now(),
+                orderId, user.getId(), event.getId(), quantity));
+        commandBus.send(new NotifyOrderCommand(UUID.randomUUID(), Instant.now(),
+                orderId, user.getId(), event.getId()));
 
         List<Ticket> tickets = ticketRepository.findByOrderId(orderId);
         assertEquals(2, tickets.size());
@@ -75,6 +83,27 @@ class TicketOrderFlowIntegrationTest {
 
         assertTrue(!notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).isEmpty(),
                 "order lifecycle notifications expected");
+    }
+
+    @Test
+    void duplicateProcessPaymentCommand_isIdempotentWithoutRollbackOnlyFailure() {
+        UUID orderId = UUID.randomUUID();
+        BigDecimal total = new BigDecimal("100.00");
+
+        commandBus.send(new ProcessPaymentCommand(UUID.randomUUID(), Instant.now(),
+                orderId, "STRIPE", total));
+
+        Payment first = paymentRepository.findByOrderId(orderId).orElseThrow();
+        assertEquals(PaymentStatus.SUCCEEDED, first.getStatus());
+
+        // A redelivered/duplicate command must not poison the command handler
+        // transaction (UnexpectedRollbackException) and must not change state.
+        commandBus.send(new ProcessPaymentCommand(UUID.randomUUID(), Instant.now(),
+                orderId, "STRIPE", total));
+
+        Payment after = paymentRepository.findByOrderId(orderId).orElseThrow();
+        assertEquals(PaymentStatus.SUCCEEDED, after.getStatus());
+        assertEquals(total, after.getAmount());
     }
 
     private AppUser createUser() {

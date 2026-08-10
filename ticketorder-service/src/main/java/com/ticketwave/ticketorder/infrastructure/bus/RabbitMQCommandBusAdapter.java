@@ -11,6 +11,8 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,8 @@ import java.util.function.Consumer;
  * it owns (e.g. CancelTicketOrderCommand) from its own bound queue.
  */
 public class RabbitMQCommandBusAdapter implements CommandBus {
+
+    private static final Logger log = LoggerFactory.getLogger(RabbitMQCommandBusAdapter.class);
 
     public static final String EXCHANGE = "ticketwave.commands";
     public static final String QUEUE = "ticketwave.commands.all";
@@ -53,11 +57,15 @@ public class RabbitMQCommandBusAdapter implements CommandBus {
 
     @Override
     public void send(Command command) {
+        log.info("Publishing command [{}] routingKey={} exchange={}",
+                command.getClass().getSimpleName(), command.getClass().getSimpleName(), EXCHANGE);
         rabbitTemplate.convertAndSend(EXCHANGE, command.getClass().getSimpleName(), command);
     }
 
     @RabbitListener(queues = QUEUE)
     public void onMessage(Command command) {
+        log.info("Received command [{}] commandId={} queue={}",
+                command.getClass().getSimpleName(), command.commandId(), QUEUE);
         for (Consumer<Command> consumer : handlers.getOrDefault(command.getClass(), List.of())) {
             consumer.accept(command);
         }

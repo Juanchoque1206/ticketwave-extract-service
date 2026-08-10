@@ -12,6 +12,7 @@ import com.ticketwave.infrastructure.exception.PaymentException;
 import com.ticketwave.infrastructure.exception.ResourceNotFoundException;
 import com.ticketwave.domain.payment.PaymentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -34,12 +35,12 @@ public class PaymentService {
     }
 
     /**
-     * Creates and settles a payment for an order. The order aggregate lives in
-     * the ticketorder-service, so the charged amount is supplied by the caller
-     * (the saga command carries it; the REST path resolves it from the order
-     * service) and only the scalar orderId is persisted here.
+     * Creates and settles a payment for an order. Runs in its own transaction
+     * (REQUIRES_NEW) so that a provider failure or a duplicate payment marks
+     * only this transaction rollback-only instead of poisoning the saga command
+     * handler's outer transaction (TransactionTemplate in ConfirmOrderUseCase).
      */
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PaymentResponse create(UUID orderId, PaymentProvider provider, BigDecimal amount) {
         if (provider == null) {
             throw new PaymentException("A payment provider is required");

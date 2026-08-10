@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ticketwave.domain.bus.CommandBus;
 import com.ticketwave.domain.bus.EventBus;
 import com.ticketwave.infrastructure.bus.InMemoryCommandBus;
@@ -65,8 +66,13 @@ public class EventBusConfig {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType("com.ticketwave.domain.events.")
                 .allowIfSubType("com.ticketwave.domain.commands.")
+                .allowIfBaseType("java.lang.")
+                .allowIfBaseType("java.math.")
+                .allowIfBaseType("java.time.")
+                .allowIfBaseType("java.util.")
                 .build();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         mapper.activateDefaultTyping(typeValidator,
                 ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         return mapper;

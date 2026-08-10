@@ -11,6 +11,8 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.function.Consumer;
  * shared contract, which is present on both classpaths).
  */
 public class RabbitMQEventBusAdapter implements EventBus {
+
+    private static final Logger log = LoggerFactory.getLogger(RabbitMQEventBusAdapter.class);
 
     public static final String EXCHANGE = "ticketwave.events";
     public static final String QUEUE = "ticketwave.events.all";
@@ -54,11 +58,15 @@ public class RabbitMQEventBusAdapter implements EventBus {
 
     @Override
     public void publish(DomainEvent event) {
+        log.info("Publishing event [{}] routingKey={} exchange={}",
+                event.getClass().getSimpleName(), event.getClass().getSimpleName(), EXCHANGE);
         rabbitTemplate.convertAndSend(EXCHANGE, event.getClass().getSimpleName(), event);
     }
 
     @RabbitListener(queues = QUEUE)
     public void onMessage(DomainEvent event) {
+        log.info("Received event [{}] id={} queue={}",
+                event.getClass().getSimpleName(), event.id(), QUEUE);
         for (Consumer<DomainEvent> consumer : handlers.getOrDefault(event.getClass(), List.of())) {
             consumer.accept(event);
         }

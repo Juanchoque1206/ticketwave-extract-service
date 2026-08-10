@@ -97,6 +97,10 @@ public class NotificationEventSubscriber {
     }
 
     private void notify(java.util.UUID userId, NotificationType type, String subject, String body) {
+        if (userId == null) {
+            log.warn("Notification skipped, no user id on event [{}] {}", type, subject);
+            return;
+        }
         userRepository.findById(userId).ifPresentOrElse(
                 user -> notificationService.send(user, type, subject, body),
                 () -> log.warn("Notification skipped, user {} not found", userId));
