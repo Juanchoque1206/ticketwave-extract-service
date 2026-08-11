@@ -1,6 +1,0 @@
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\test\java\com\ticketwave\ticketorder\config\TestInfraConfig.java
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\test\java\com\ticketwave\ticketorder\infrastructure\gateway\FakeEventGateway.java
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\test\java\com\ticketwave\ticketorder\infrastructure\gateway\FakeFraudGateway.java
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\test\java\com\ticketwave\ticketorder\infrastructure\gateway\FakePromotionGateway.java
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\test\java\com\ticketwave\ticketorder\infrastructure\gateway\FakeUserGateway.java
-C:\juandev\mdeis\project\complete-version\ticketwave-extract-service\ticketwave-extract-service\ticketorder-service\src\test\java\com\ticketwave\ticketorder\TicketOrderLifecycleIntegrationTest.java

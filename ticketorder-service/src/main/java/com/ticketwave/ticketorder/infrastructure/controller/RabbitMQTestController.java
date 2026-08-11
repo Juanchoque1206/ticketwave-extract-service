@@ -1,9 +1,11 @@
 package com.ticketwave.ticketorder.infrastructure.controller;
 
 import com.ticketwave.ticketorder.domain.commands.CancelTicketOrderCommand;
+import com.ticketwave.ticketorder.domain.commands.Command;
 import com.ticketwave.ticketorder.domain.commands.IssueTicketCommand;
 import com.ticketwave.ticketorder.domain.commands.ProcessPaymentCommand;
 import com.ticketwave.ticketorder.domain.commands.RefundPaymentCommand;
+import com.ticketwave.ticketorder.domain.events.DomainEvent;
 import com.ticketwave.ticketorder.domain.events.PaymentAuthorized;
 import com.ticketwave.ticketorder.domain.events.PaymentFailed;
 import com.ticketwave.ticketorder.domain.events.TicketIssued;
@@ -43,127 +45,52 @@ public class RabbitMQTestController {
 
     @PostMapping("/event/{type}")
     public ResponseEntity<Map<String, Object>> publishEvent(@PathVariable String type) {
-        Map<String, Object> payload = switch (type.toLowerCase()) {
-            case "payment-authorized" -> paymentAuthorized();
-            case "payment-failed" -> paymentFailed();
-            case "ticket-order-created" -> ticketOrderCreated();
-            case "ticket-issued" -> ticketIssued();
+        DomainEvent event = switch (type.toLowerCase()) {
+            case "payment-authorized" -> new PaymentAuthorized(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    BigDecimal.valueOf(150.00), "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            case "payment-failed" -> new PaymentFailed(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    BigDecimal.valueOf(150.00), "Insufficient funds");
+            case "ticket-order-created" -> new TicketOrderCreated(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    UUID.randomUUID(), 2, BigDecimal.valueOf(300.00), BigDecimal.ZERO);
+            case "ticket-issued" -> new TicketIssued(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    UUID.randomUUID(), List.of(UUID.randomUUID(), UUID.randomUUID()));
             default -> throw new IllegalArgumentException("Unknown event type: " + type);
         };
-        publishTo(RabbitMQEventBusAdapter.EXCHANGE, type, payload);
+        publishTo(RabbitMQEventBusAdapter.EXCHANGE, type, event);
         return ResponseEntity.accepted().body(Map.of(
                 "exchange", RabbitMQEventBusAdapter.EXCHANGE,
                 "routingKey", type,
-                "payload", payload));
+                "payload", event));
     }
 
     @PostMapping("/command/{type}")
     public ResponseEntity<Map<String, Object>> publishCommand(@PathVariable String type) {
-        Map<String, Object> payload = switch (type.toLowerCase()) {
-            case "cancel-ticket-order" -> cancelTicketOrder();
-            case "process-payment" -> processPayment();
-            case "issue-ticket" -> issueTicket();
-            case "refund-payment" -> refundPayment();
+        Command command = switch (type.toLowerCase()) {
+            case "cancel-ticket-order" -> new CancelTicketOrderCommand(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    UUID.randomUUID(), 2, "User cancellation");
+            case "process-payment" -> new ProcessPaymentCommand(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), "STRIPE", BigDecimal.valueOf(150.00));
+            case "issue-ticket" -> new IssueTicketCommand(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    UUID.randomUUID(), 2);
+            case "refund-payment" -> new RefundPaymentCommand(
+                    UUID.randomUUID(), Instant.now(), UUID.randomUUID(), UUID.randomUUID(),
+                    BigDecimal.valueOf(150.00), "Order cancelled");
             default -> throw new IllegalArgumentException("Unknown command type: " + type);
         };
-        publishTo(RabbitMQCommandBusAdapter.EXCHANGE, type, payload);
+        publishTo(RabbitMQCommandBusAdapter.EXCHANGE, type, command);
         return ResponseEntity.accepted().body(Map.of(
                 "exchange", RabbitMQCommandBusAdapter.EXCHANGE,
                 "routingKey", type,
-                "payload", payload));
+                "payload", command));
     }
 
     private void publishTo(String exchange, String routingKey, Object message) {
         rabbitTemplate.convertAndSend(exchange, routingKey, message);
-    }
-
-    private Map<String, Object> paymentAuthorized() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.events.PaymentAuthorized",
-                "id", UUID.randomUUID().toString(),
-                "occurredAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "total", BigDecimal.valueOf(150.00),
-                "providerTransactionId", "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-    }
-
-    private Map<String, Object> paymentFailed() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.events.PaymentFailed",
-                "id", UUID.randomUUID().toString(),
-                "occurredAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "total", BigDecimal.valueOf(150.00),
-                "reason", "Insufficient funds");
-    }
-
-    private Map<String, Object> ticketOrderCreated() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.events.TicketOrderCreated",
-                "id", UUID.randomUUID().toString(),
-                "occurredAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "eventId", UUID.randomUUID().toString(),
-                "quantity", 2,
-                "total", BigDecimal.valueOf(300.00),
-                "discount", BigDecimal.ZERO);
-    }
-
-    private Map<String, Object> ticketIssued() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.events.TicketIssued",
-                "id", UUID.randomUUID().toString(),
-                "occurredAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "eventId", UUID.randomUUID().toString(),
-                "ticketIds", List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
-    }
-
-    private Map<String, Object> cancelTicketOrder() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.commands.CancelTicketOrderCommand",
-                "commandId", UUID.randomUUID().toString(),
-                "issuedAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "eventId", UUID.randomUUID().toString(),
-                "quantity", 2,
-                "reason", "User cancellation");
-    }
-
-    private Map<String, Object> processPayment() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.commands.ProcessPaymentCommand",
-                "commandId", UUID.randomUUID().toString(),
-                "issuedAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "provider", "STRIPE",
-                "amount", BigDecimal.valueOf(150.00));
-    }
-
-    private Map<String, Object> issueTicket() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.commands.IssueTicketCommand",
-                "commandId", UUID.randomUUID().toString(),
-                "issuedAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "eventId", UUID.randomUUID().toString(),
-                "quantity", 2);
-    }
-
-    private Map<String, Object> refundPayment() {
-        return Map.of(
-                "@class", "com.ticketwave.ticketorder.domain.commands.RefundPaymentCommand",
-                "commandId", UUID.randomUUID().toString(),
-                "issuedAt", Instant.now().toString(),
-                "orderId", UUID.randomUUID().toString(),
-                "userId", UUID.randomUUID().toString(),
-                "amount", BigDecimal.valueOf(150.00),
-                "reason", "Order cancelled");
     }
 }
