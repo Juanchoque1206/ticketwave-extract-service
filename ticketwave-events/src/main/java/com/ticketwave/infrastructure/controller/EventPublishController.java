@@ -48,7 +48,6 @@ public class EventPublishController {
                 request.quantity(),
                 request.total(),
                 request.discount() != null ? request.discount() : java.math.BigDecimal.ZERO);
-        System.out.println("sdfjk==========>>>" + event);
         eventBus.publish(event);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(event.id());
     }
